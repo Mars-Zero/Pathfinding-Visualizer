@@ -100,7 +100,7 @@ def main(win, width):
                         for nod in row:
                             nod.update_neighbors(grid)
 
-                    #algorithms.a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
+                    algorithms.a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
 
                 if event.key == pygame.K_c:
                     start = None
