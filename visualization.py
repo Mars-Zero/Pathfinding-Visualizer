@@ -50,10 +50,23 @@ def get_clicked_pos(pos, rows, width):
     return row, col
 
 
+def set_border(grid, rows):
+    for i in range(0, rows):
+        grid[i][0].make_barrier()
+        grid[0][i].make_barrier()
+        grid[rows-1][i].make_barrier()
+        grid[i][rows-1].make_barrier()
+
+    for lin in grid:
+        for nod in lin:
+            nod.update_neighbors(grid)
+
+
 def main(win, width):
     ROWS = 50
     grid = make_grid(ROWS, width)
 
+    set_border(grid, ROWS)
     start = None
     end = None
 
@@ -66,10 +79,10 @@ def main(win, width):
 
             if pygame.mouse.get_pressed()[0]:  # LEFT
                 pos = pygame.mouse.get_pos()
-                row, col = get_clicked_pos(pos, ROWS, width)
-                if not (row < ROWS and col < ROWS):
+                lin, col = get_clicked_pos(pos, ROWS, width)
+                if not (lin < ROWS and col < ROWS):
                     continue
-                nod = grid[row][col]
+                nod = grid[lin][col]
                 if not start and nod != end:
                     start = nod
                     start.make_start()
@@ -83,11 +96,11 @@ def main(win, width):
 
             elif pygame.mouse.get_pressed()[2]:  # RIGHT
                 pos = pygame.mouse.get_pos()
-                row, col = get_clicked_pos(pos, ROWS, width)
-                if not (row < ROWS and col < ROWS):
+                lin, col = get_clicked_pos(pos, ROWS, width)
+                if not (lin < ROWS and col < ROWS):
                     continue
 
-                nod = grid[row][col]
+                nod = grid[lin][col]
                 nod.reset()
                 if nod == start:
                     start = None
@@ -96,16 +109,35 @@ def main(win, width):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and start and end:
-                    for row in grid:
-                        for nod in row:
+                    for lin in grid:
+                        for nod in lin:
                             nod.update_neighbors(grid)
 
                     algorithms.a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
+
+                if event.key == pygame.K_d and start and end:
+                    for lin in grid:
+                        for nod in lin:
+                            nod.update_neighbors(grid)
+                    algorithms.dijkstra(lambda: draw(win, grid, ROWS, width), grid, start, end)
+
+                if event.key == pygame.K_b and start and end:
+                    for lin in grid:
+                        for nod in lin:
+                            nod.update_neighbors(grid)
+                    algorithms.bfs(lambda: draw(win, grid, ROWS, width), grid, start, end)
+
+                if event.key == pygame.K_f and start and end:
+                    for lin in grid:
+                        for nod in lin:
+                            nod.update_neighbors(grid)
+                    algorithms.dfs(lambda: draw(win, grid, ROWS, width), grid, start, end)
 
                 if event.key == pygame.K_c:
                     start = None
                     end = None
                     grid = make_grid(ROWS, width)
+                    set_border(grid, ROWS)
 
     pygame.quit()
 
